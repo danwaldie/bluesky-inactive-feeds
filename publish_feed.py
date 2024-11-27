@@ -3,31 +3,38 @@
 # pip3 install atproto
 
 from atproto import Client, models
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
 # YOUR bluesky handle
 # Ex: user.bsky.social
-HANDLE: str = ''
+HANDLE: str = os.getenv('HANDLE')
 
 # YOUR bluesky password, or preferably an App Password (found in your client settings)
 # Ex: abcd-1234-efgh-5678
-PASSWORD: str = ''
+PASSWORD: str = os.getenv('APP_PASSWORD')
 
 # The hostname of the server where feed server will be hosted
 # Ex: feed.bsky.dev
-HOSTNAME: str = ''
+HOSTNAME: str = os.getenv('HOSTNAME')
 
-# A short name for the record that will show in urls
-# Lowercase with no spaces.
-# Ex: whats-hot
-RECORD_NAME: str = ''
+# For each feed period (7d, 30d, 120d), run with these values:
 
-# A display name for your feed
-# Ex: What's Hot
-DISPLAY_NAME: str = ''
+# 7 days
+RECORD_NAME = 'inactive-7d'
+DISPLAY_NAME = 'Inactive (7 days)'
+DESCRIPTION = 'Last posts from users who haven\'t posted in the past week'
 
-# (Optional) A description of your feed
-# Ex: Top trending content from the whole network
-DESCRIPTION: str = 'powered by The AT Protocol SDK for Python'
+# 30 days
+RECORD_NAME = 'inactive-30d'
+DISPLAY_NAME = 'Inactive (30 days)'
+DESCRIPTION = 'Last posts from users who haven\'t posted in the past month'
+
+# 120 days
+RECORD_NAME = 'inactive-120d'
+DISPLAY_NAME = 'Inactive (120 days)'
+DESCRIPTION = 'Last posts from users who haven\'t posted in the past 4 months'
 
 # (Optional) The path to an image to be used as your feed's avatar
 # Ex: ./path/to/avatar.jpeg

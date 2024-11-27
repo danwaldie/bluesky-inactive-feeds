@@ -1,9 +1,10 @@
 from collections import defaultdict
+from datetime import datetime
 
 from atproto import models
 
 from server.logger import logger
-from server.database import db, Post
+from server.database import db, Post, User
 
 
 def operations_callback(ops: defaultdict) -> None:
@@ -55,3 +56,34 @@ def operations_callback(ops: defaultdict) -> None:
             for post_dict in posts_to_create:
                 Post.create(**post_dict)
         logger.info(f'Added to feed: {len(posts_to_create)}')
+
+    # Track users and their latest posts
+    users_to_update = []
+    for created_post in ops[models.ids.AppBskyFeedPost]['created']:
+        author_did = created_post['author']
+        record = created_post['record']
+        post_time = datetime.fromisoformat(record.created_at.replace('Z', '+00:00'))
+        
+        # Get or prepare new user record
+        user, created = User.get_or_create(
+            did=author_did,
+            defaults={
+                'handle': None,
+                'last_post_time': post_time,
+                'last_post_uri': created_post['uri'],
+                'last_post_cid': created_post['cid']
+            }
+        )
+        
+        # Update if this is a newer post
+        if not created and (not user.last_post_time or post_time > user.last_post_time):
+            user.last_post_time = post_time
+            user.last_post_uri = created_post['uri']
+            user.last_post_cid = created_post['cid']
+            users_to_update.append(user)
+
+    # Batch update users
+    if users_to_update:
+        with db.atomic():
+            for user in users_to_update:
+                user.save()

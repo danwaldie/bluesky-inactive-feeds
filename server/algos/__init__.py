@@ -1,5 +1,7 @@
-from . import whats_alf
+from . import inactive
 
 algos = {
-    whats_alf.uri: whats_alf.handler
+    'at://did:plc:YOUR_DID/app.bsky.feed.generator/inactive-7d': inactive.get_handler(7),
+    'at://did:plc:YOUR_DID/app.bsky.feed.generator/inactive-30d': inactive.get_handler(30),
+    'at://did:plc:YOUR_DID/app.bsky.feed.generator/inactive-120d': inactive.get_handler(120),
 }

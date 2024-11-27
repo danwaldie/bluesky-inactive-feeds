@@ -23,6 +23,15 @@ class SubscriptionState(BaseModel):
     cursor = peewee.BigIntegerField()
 
 
+class User(BaseModel):
+    did = peewee.CharField(unique=True)  # User's DID
+    handle = peewee.CharField(null=True)  # User's handle (for display)
+    last_post_uri = peewee.CharField(null=True)
+    last_post_cid = peewee.CharField(null=True)
+    last_post_time = peewee.DateTimeField(null=True)
+    indexed_at = peewee.DateTimeField(default=datetime.now)
+
+
 if db.is_closed():
     db.connect()
-    db.create_tables([Post, SubscriptionState])
+    db.create_tables([Post, SubscriptionState, User])
